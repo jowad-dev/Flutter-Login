@@ -1,0 +1,32 @@
+name: Build Flutter APK from Zip
+
+on:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Extract ZIP Project
+        run: |
+          unzip \*.zip -d my_project
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: 'stable'
+
+      - name: Build APK
+        run: |
+          cd my_project
+          flutter pub get
+          flutter build apk --release
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release
+          path: my_project/build/app/outputs/flutter-apk/app-release.apk
